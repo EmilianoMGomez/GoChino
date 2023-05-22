@@ -2,7 +2,7 @@
 import pygame
 import sys
 
-from Clases.prueba import Prueba
+from Clases.prueba import Principal
 
 
 #variables ventana
@@ -103,8 +103,13 @@ while en_juego:
         en_partida_contra_jugador=False
         en_inicio=True
         en_partida_contra_pc=False
-        sc=Prueba()
-        sc.run()
+        
+        for event in pygame.event.get():
+            if(event.type==pygame.QUIT):
+                sys.exit()
+        
+        
+        
         
                 
         pygame.display.flip()
@@ -115,9 +120,9 @@ while en_juego:
         en_partida_contra_jugador=False
         en_inicio=True
         en_partida_contra_pc=False
-        for event in pygame.event.get():
-            if(event.type==pygame.QUIT):
-                sys.exit()
+        
+        sc=Principal()
+        sc.ejecutar()
         
         
         pygame.display.flip()
