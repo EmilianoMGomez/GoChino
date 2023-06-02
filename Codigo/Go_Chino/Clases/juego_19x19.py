@@ -24,7 +24,7 @@ class Principal():
     def __init__(self, komi=2.5):
         pygame.init()
 
-        ANCHO_PANTALLA = 800
+        ANCHO_PANTALLA = 600
         ALTO_PANTALLA = 600
 
         self.sprites = pygame.sprite.Group()

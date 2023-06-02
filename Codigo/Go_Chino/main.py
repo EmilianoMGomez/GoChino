@@ -2,11 +2,12 @@
 import pygame
 import sys
 
-from Clases.prueba import Principal
+from Clases.juego_19x19 import Principal
+from Clases.juego_9x9 import Principal as tablero_9x9_principal
 
 
 #variables ventana
-ancho_pantalla=800
+ancho_pantalla=600
 alto_pantalla=600
 color_fondo=(34,121,153) 
 size=(ancho_pantalla,alto_pantalla)
@@ -33,6 +34,10 @@ jugar_contra_pc_img=pygame.image.load("img/pc.png").convert()
 jugar_contra_jugador_img=pygame.image.load("img/jugador.png").convert()
 salir_img=pygame.image.load("img/salir.png").convert()
 
+atras_img=pygame.image.load("Img\Atras.jpg").convert()
+tablero_9x9_img=pygame.image.load("Img\Tablero_9x9.jpg").convert()
+tablero_19x19_img=pygame.image.load("Img\Tablero_19x19.jpg").convert()
+
 class Button():
     def __init__(self,x,y,image,scale):
         width=image.get_width()
@@ -58,18 +63,26 @@ class Button():
         return action
 
 #Crear instancias
-pc_button=Button(200,150,jugar_contra_pc_img,1)
-jugador_button=Button(200,250,jugar_contra_jugador_img,1)
-salir_button=Button(200,350,salir_img,1)
 
+        #Boton de Inicio
 
+jugador_button=Button(250,100,jugar_contra_jugador_img,1)
+salir_button=Button(50,500,salir_img,1)
+
+        #Boton jugar contra jugador
+        
+tablero_19x19_button=Button(200,200,tablero_19x19_img,1)
+tablero_9x9_button=Button(200,300,tablero_9x9_img,1)
+atras_button=Button(200,400,atras_img,1)
+        
 
 
 #variables juego
 en_juego=True
 en_inicio=True
-en_partida_contra_pc=any
-en_partida_contra_jugador=any
+tablero_19x19=False
+tablero_9x9=False
+en_partida_contra_jugador=False
 
 
 
@@ -79,17 +92,14 @@ while en_juego:
 
 
     while en_inicio:
+        
         for event in pygame.event.get():
             if(event.type==pygame.QUIT):
                 sys.exit()
         screen.blit(inicio,(0,0))
         
-        if pc_button.draw():
-            en_partida_contra_pc=True
-            en_partida_contra_jugador=False
-            en_inicio=False
+        
         if jugador_button.draw():
-            en_partida_contra_pc=False
             en_partida_contra_jugador=True
             en_inicio=False
         if salir_button.draw():
@@ -99,31 +109,74 @@ while en_juego:
         clock.tick(30)
         
     
-    while en_partida_contra_pc:
-        en_partida_contra_jugador=False
-        en_inicio=True
-        en_partida_contra_pc=False
+    while en_partida_contra_jugador:
+        
+        en_partida_contra_jugador=True
+        en_inicio=False
+        tablero_9x9 =False
+        tablero_19x19=False
+        
         
         for event in pygame.event.get():
             if(event.type==pygame.QUIT):
                 sys.exit()
+        screen.blit(inicio,(0,0))
+        
+        if tablero_19x19_button.draw():
+            tablero_19x19=True
+            tablero_9x9 =False
+            en_partida_contra_jugador=False
+            en_inicio=False
+            
+        if tablero_9x9_button.draw():
+            
+            tablero_19x19=False
+            tablero_9x9 =True
+            en_partida_contra_jugador=False
+            en_inicio=False
+            
+
+        if atras_button.draw():
+            tablero_9x9 =False
+            tablero_19x19=False
+            en_partida_contra_jugador=False
+            en_inicio=True  
+
+        #pygame.display.flip()
+        #clock.tick(30)
         
         
+        while tablero_19x19:
+            en_juego=True
+            en_inicio=True
+            tablero_19x19=False
+            en_partida_contra_jugador=False
+            
+            
+            
+            sc=Principal()
+            sc.ejecutar()
         
-        
-                
         pygame.display.flip()
-    
-    
-    while en_partida_contra_jugador:
+        clock.tick(30)
         
-        en_partida_contra_jugador=False
-        en_inicio=True
-        en_partida_contra_pc=False
         
-        sc=Principal()
-        sc.ejecutar()
-        
+        while tablero_9x9:
+            en_juego=True
+            en_inicio=True
+            tablero_19x19=False
+            tablero_9x9=False
+            en_partida_contra_jugador=False
+            
+            
+            
+            sc=tablero_9x9_principal()
+            sc.ejecutar()
         
         pygame.display.flip()
+        clock.tick(30)
+        
+        
+        
+    pygame.display.flip()
         #clock.tick(30)    
