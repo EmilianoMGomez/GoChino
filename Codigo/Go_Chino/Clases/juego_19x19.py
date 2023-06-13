@@ -196,4 +196,81 @@ class Principal():
                 return True
         
         return False 
-     
+     def FinPartida(self):
+        persona_gano = self.calcularQuienGano()
+        mensaje_ganador = f'Go Chess | ¡{persona_gano} ha ganado!'
+
+        pygame.display.set_caption(mensaje_ganador)
+
+        self.fin_del_juego = True
+
+    def calcularQuienGano(self):
+        puntaje_blanco = self.komi
+        puntaje_negro = 0
+
+        blancas_en_tablero, negras_en_tablero = self.encontrarPiezasEnTablero()
+        blancas_capturadas, negras_capturadas = self.calcularCasillasRodeadas()
+
+        puntaje_blanco += blancas_en_tablero
+        puntaje_negro += negras_en_tablero
+
+        puntaje_blanco += blancas_capturadas
+        puntaje_negro += negras_capturadas
+        
+        print()
+        self.imprimir('PUNTAJES FINALES:', 'info')
+        self.imprimir(f'{blancas_capturadas=}, {negras_capturadas=}', 'info')
+        self.imprimir(f'{blancas_en_tablero=}, {negras_en_tablero=}', 'info')
+        self.imprimir(f'{puntaje_blanco=}, {puntaje_negro=}', 'info')
+        print()
+
+        if puntaje_blanco > puntaje_negro:
+            return 'Blancas'
+        else:
+            return 'Negras'
+    
+    def encontrarPiezasEnTablero(self):
+        cantidad_blancas = 0
+        cantidad_negras = 0
+
+        for fila in self.arreglo_sprites:
+            for elemento in fila:
+                if not elemento.ocupado:
+                    continue
+
+            color = elemento.color
+
+            if color == BLANCO:
+                cantidad_blancas += 1
+            else:
+                cantidad_negras += 1
+
+        return (cantidad_blancas, cantidad_negras)
+
+    def calcularCasillasRodeadas(self):
+        cantidad_blancas = 0
+        cantidad_negras = 0
+    
+        self.grupos_vacios = []
+        self.cuentas_vacias = []
+        self.colores_vacios = []
+
+        self.visitados = []        
+
+        for y, fila in enumerate(self.arreglo_sprites):
+            for x, sprite in enumerate(fila):
+                if sprite.ocupado:
+                    continue
+            
+                self.encontrarCasillasVacias(y, x)
+
+        for indice in range(len(self.colores_vacios)):
+            cuenta_vacia = self.cuentas_vacias[indice]
+            colores_vacios = self.colores_vacios[indice]
+
+            if NEGRO not in colores_vacios and BLANCO in colores_vacios:
+                cantidad_blancas += cuenta_vacia
+            if BLANCO not in colores_vacios and NEGRO in colores_vacios:
+                cantidad_negras += cuenta_vacia
+    
+        return (cantidad_blancas, cantidad_negras)
