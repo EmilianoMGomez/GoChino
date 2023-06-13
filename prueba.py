@@ -1,6 +1,6 @@
 import pygame
 import os
-from pygame.locals import K_ESCAPE, KEYDOWN, MOUSEBUTTONUP, QUIT
+from pygame.locals import K_ESCAPE, KEYDOWN, MOUSEBUTTONUP, QUIT, K_p
 
 BLANCO = (255, 255, 255)
 COLORTABLERO = (206, 148, 90)
@@ -24,15 +24,19 @@ class Principal():
     def __init__(self, komi=2.5):
         pygame.init()
 
-        ANCHO_PANTALLA = 600
-        ALTO_PANTALLA = 600
+        ANCHO_PANTALLA = 563
+        ALTO_PANTALLA = 563
 
         self.sprites = pygame.sprite.Group()
         self.arreglo_sprites = [[0 for _ in range(19)] for _ in range(19)]
 
         self.pantalla = pygame.display.set_mode((ANCHO_PANTALLA, ALTO_PANTALLA))
 
-        
+        #pygame.display.set_caption('Go Chess | ¡Es el turno de las negras!')
+        #pygame.display.set_allow_screensaver(True)
+
+        #if os.path.exists('./iconFile.png'):
+        #   pygame.display.set_icon(pygame.image.load('./iconFile.png'))
 
         self.movimiento = 0
         self.movimiento_blanco = False
@@ -59,19 +63,19 @@ class Principal():
 
                 if evento.type == MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    
+                    #self.imprimir(f'Posición clickeada: {pos}', 'info')
 
                     sprites_click = [sprite for sprite in self.sprites if self.colisionSprite(sprite.ubicacion, pos)]
 
                     if sprites_click and not self.fin_del_juego:
-                    
+                    #   self.imprimir('Sprite detectado.', 'info')
                         sprite_click = sprites_click[0]
 
                         if not sprite_click.ocupado:
                             self.movimiento += 1
                             color = NEGRO if self.movimiento % 2 else BLANCO
 
-                        
+                        #  self.imprimir(f'Ubicación del sprite click: {sprite_click.ubicacion}', 'info')
 
                             x, y = sprite_click.ubicacion
                             ubicacion = (x + 1, y)
@@ -81,7 +85,7 @@ class Principal():
                             sprite_click.ocupado = True
                             sprite_click.color = color
                             
-                            
+                            #self.capturarPiezas(*sprite_click.indices_array)
 
                             if not sprite_click.ocupado:
                                 self.movimiento -= 1
@@ -93,18 +97,27 @@ class Principal():
                                 persona = 'Negras' if not self.movimiento % 2 else 'Blancas'
                                 pygame.display.set_caption(f'Go Chess | ¡Es el turno de {persona}!')
 
-                    
+                    #else:
+                        #self.imprimir('No se detectó ningún sprite.', 'info')
+
+                    #print()
 
                 elif evento.type == KEYDOWN:
                     if evento.key == K_ESCAPE:
                         ejecutando = False
                         
-                
+                # elif evento.key == K_p:
+                    #    jugador = 'Blancas' if not self.movimiento % 2 else 'Negras'
+
+                    #   self.imprimir(f'{jugador} ha pasado su turno.', 'info')
+                    #  self.pasarTurno()
 
                 elif evento.type == QUIT:
                     ejecutando = False
             
             pygame.display.update()
+        
+        #pygame.quit()       
         
         
     def dibujarTablero(self):
@@ -167,7 +180,9 @@ class Principal():
         self.movimiento += 1
         self.movimiento_blanco = True if not self.movimiento_blanco else False
 
-            
+        persona = 'Negras' if not self.movimiento % 2 else 'Blancas'
+        #pygame.display.set_caption(f'Go Chess | ¡Es el turno de {persona}!')
+    
     
     def agregarSprites(self):
         fila = 0
@@ -196,6 +211,12 @@ class Principal():
                 return True
         
         return False 
+     
+   
+              
+
+    
+"""    
     def FinPartida(self):
         persona_gano = self.calcularQuienGano()
         mensaje_ganador = f'Go Chess | ¡{persona_gano} ha ganado!'
@@ -274,14 +295,49 @@ class Principal():
                 cantidad_negras += cuenta_vacia
     
         return (cantidad_blancas, cantidad_negras)
+
+    def encontrarCasillasVacias(self, y, x, agregando=False):
+        if not agregando:
+            self.grupos_vacios.append([])
+            self.cuentas_vacias.append(0)
+            self.colores_vacios.append([])
+
+        vecinos = self.obtenerVecinos(y, x, (19, 19))
+        vecinos.append((y, x))
+
+        for ubicacion in vecinos:
+            sprite = self.arreglo_sprites[ubicacion[0]][ubicacion[1]]
+    
+            if sprite.ocupado or sprite in self.visitados:
+                continue
+
+            self.visitados.append(sprite)
+            self.grupos_vacios[-1].append(ubicacion)
+            self.cuentas_vacias[-1] += 1
+            self.colores_vacios[-1] += self.obtenerColoresNoVaciosDeVecinos(y, x)
+
+            self.encontrarCasillasVacias(ubicacion[0], ubicacion[1], agregando=True)
+
+    def obtenerColoresNoVaciosDeVecinos(self, y, x):
+        colores = []
+
+        vecinos = self.obtenerVecinos(y, x, (19, 19))
+        for ubicacion in vecinos:
+            sprite = self.arreglo_sprites[ubicacion[0]][ubicacion[1]]
+            if not sprite.ocupado:
+                continue
+            colores.append(sprite.color)
+    
+        return colores
+
     def probarGrupo(self, tablero, tablero_oponente, y, x, grupo_actual):
-        """ Suponer que el grupo actual está capturado. Encontrarlo mediante un recorrido de inundación
+         Suponer que el grupo actual está capturado. Encontrarlo mediante un recorrido de inundación
         y si se encuentra una casilla vacía vecina, romper (el grupo está vivo).
 
         tablero: matriz de 19x19 de piedras del jugador
         tablero_oponente: matriz de 19x19 de piedras del oponente
         x, y: posición a probar
-        grupo_actual: piedras probadas en el color del jugador"""
+        grupo_actual: piedras probadas en el color del jugador
 
         
 
@@ -304,9 +360,9 @@ class Principal():
 
     def rellenarInundacion(self, libertades, y, x):
         
-        """Rellena de forma recursiva una región que se sabe que tiene libertades.
+        Rellena de forma recursiva una región que se sabe que tiene libertades.
         1.0 indica una libertad, 0.0 indica sin decidir y -1.0 indica una no libertad conocida (piedra negra).
-        `libertades` es una matriz np.array de libertades y no libertades conocidas actualmente."""
+        `libertades` es una matriz np.array de libertades y no libertades conocidas actualmente.
         
 
         if not libertades[y][x]:
@@ -338,14 +394,14 @@ class Principal():
                 self.arreglo_sprites[indice1][indice2].color = color
 
     def capturarPiezasRapido(self, tablero_negro_, tablero_blanco_, turno_blanco, y, x):
-        """Eliminar todas las piezas del tablero que no tienen libertades.
+        Eliminar todas las piezas del tablero que no tienen libertades.
         tablero_negro es una matriz np.array de tamaño 19x19 con valor 1.0 si hay una piedra negra presente
         y 0.0 en caso contrario.
 
         tablero_blanco es una matriz np.array de tamaño 19x19 similar a tablero_negro.
 
         turno_blanco: el jugador que hizo un movimiento
-        (x, y): posición del movimiento"""""
+        (x, y): posición del movimiento
         
 
         tablero_negro, tablero_blanco = tablero_negro_.copy(), tablero_blanco_.copy()
@@ -422,3 +478,20 @@ class Principal():
             vecinos.append((y, x + 1))
 
         return vecinos
+
+
+
+    
+""" 
+        
+        
+    
+    
+    # indica si mueve el jugador blanco o negr, dependiento del movimiento si es par o impar para poder saber quien mueve
+    # def passMove(self):
+        
+    #     self.move += 1
+    #     #self.white_move = True if not self.white_move else False
+
+    #     person = 'Black' if not self.move % 2 else 'White'
+               
