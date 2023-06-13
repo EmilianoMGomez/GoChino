@@ -196,7 +196,7 @@ class Principal():
                 return True
         
         return False 
-     def FinPartida(self):
+    def FinPartida(self):
         persona_gano = self.calcularQuienGano()
         mensaje_ganador = f'Go Chess | ¡{persona_gano} ha ganado!'
 
@@ -274,3 +274,151 @@ class Principal():
                 cantidad_negras += cuenta_vacia
     
         return (cantidad_blancas, cantidad_negras)
+    def probarGrupo(self, tablero, tablero_oponente, y, x, grupo_actual):
+         """Suponer que el grupo actual está capturado. Encontrarlo mediante un recorrido de inundación
+        y si se encuentra una casilla vacía vecina, romper (el grupo está vivo).
+
+        tablero: matriz de 19x19 de piedras del jugador
+        tablero_oponente: matriz de 19x19 de piedras del oponente
+        x, y: posición a probar
+        grupo_actual: piedras probadas en el color del jugador"""
+
+        
+
+        pos = (y, x)
+
+        if grupo_actual[pos]:
+            # las piedras ya probadas
+            return False
+        if tablero_oponente[pos]:
+            grupo_actual[pos] = True
+            vecinos = self.obtenerVecinos(y, x, tablero.shape)
+
+            for yn, xn in vecinos:
+                tiene_libertades = self.probarGrupo(tablero, tablero_oponente, yn, xn, grupo_actual)
+                if tiene_libertades:
+                    return True
+            return False
+
+        return not tablero[pos]
+
+    def rellenarInundacion(self, libertades, y, x):
+        
+        """Rellena de forma recursiva una región que se sabe que tiene libertades.
+        1.0 indica una libertad, 0.0 indica sin decidir y -1.0 indica una no libertad conocida (piedra negra).
+        `libertades` es una matriz np.array de libertades y no libertades conocidas actualmente."""
+        
+
+        if not libertades[y][x]:
+            libertades[y][x] = 1.0 
+            if y > 0:
+                self.rellenarInundacion(libertades, y-1, x)
+            if y < libertades.shape[0] - 1:
+                self.rellenarInundacion(libertades, y+1, x)
+            if x > 0:
+                self.rellenarInundacion(libertades, y, x-1)
+            if x < libertades.shape[1] - 1:
+                self.rellenarInundacion(libertades, y, x+1)
+
+    def capturarPiezas(self, y, x):
+        tablero_blanco = np.array([[1.0 if elemento.color == BLANCO and elemento.ocupado else 0.0 for elemento in fila] for fila in self.arreglo_sprites], dtype=int)
+        tablero_negro = np.array([[1.0 if elemento.color == NEGRO and elemento.ocupado else 0.0 for elemento in fila] for fila in self.arreglo_sprites], dtype=int)
+
+        movimiento_blanco = self.movimiento_blanco
+        self.movimiento_blanco = True if not self.movimiento_blanco else False
+
+        tablero_resultante = self.capturarPiezasRapido(tablero_negro, tablero_blanco, movimiento_blanco, y, x)
+
+        for indice1, fila in enumerate(tablero_resultante):
+            for indice2, elemento in enumerate(fila):
+                color = BLANCO if elemento == 1 else NEGRO
+                ocupado = True if elemento != 0 else False
+
+                self.arreglo_sprites[indice1][indice2].ocupado = ocupado
+                self.arreglo_sprites[indice1][indice2].color = color
+
+    def capturarPiezasRapido(self, tablero_negro_, tablero_blanco_, turno_blanco, y, x):
+        """Eliminar todas las piezas del tablero que no tienen libertades.
+        tablero_negro es una matriz np.array de tamaño 19x19 con valor 1.0 si hay una piedra negra presente
+        y 0.0 en caso contrario.
+
+        tablero_blanco es una matriz np.array de tamaño 19x19 similar a tablero_negro.
+
+        turno_blanco: el jugador que hizo un movimiento
+        (x, y): posición del movimiento"""""
+        
+
+        tablero_negro, tablero_blanco = tablero_negro_.copy(), tablero_blanco_.copy()
+
+        # Solo probar vecinos del movimiento actual (los demás no tendrán libertades cambiadas)
+        vecinos = self.obtenerVecinos(y, x, tablero_negro.shape)
+
+        tablero = tablero_blanco if turno_blanco else tablero_negro
+        tablero_oponente = tablero_negro if turno_blanco else tablero_blanco
+
+        tablero_oponente_original = tablero_oponente.copy()
+
+        # Para probar movimientos suicidas
+        pos_original = (y, x)
+        pos_original = pos_original[::-1]
+
+        # Probar suicidios
+
+        grupo_actual = np.zeros((19, 19), dtype=bool)
+        pos_original_tiene_libertades = self.probarGrupo(tablero_oponente, tablero, *pos_original, grupo_actual)
+
+        # Solo probar piedras adyacentes en el color del oponente
+        for pos in vecinos:
+            pos = pos[::-1]
+
+            if not tablero_oponente[pos]:
+                continue
+
+            grupo_actual = np.zeros((19, 19), dtype=bool)
+            tiene_libertades = self.probarGrupo(tablero, tablero_oponente, *pos, grupo_actual)
+
+            if not tiene_libertades:
+                tablero_oponente[grupo_actual] = False
+
+        mismo = True
+        break_out = False
+
+        for indice_fila, fila in enumerate(tablero_oponente_original):
+            for indice_item, item in enumerate(fila):
+                if tablero_oponente[indice_fila, indice_item] != item:
+                    mismo = False
+                    break_out = True
+                    break
+            if break_out:
+                break
+
+        tablero_salida = [[i for i in range(19)] for v in range(19)]
+        for i in range(19):
+            for v in range(19):
+                if tablero_blanco[i][v]:
+                    tablero_salida[i][v] = 1
+                elif tablero_negro[i][v]:
+                    tablero_salida[i][v] = -1
+                else:
+                    tablero_salida[i][v] = 0
+
+        if mismo and not pos_original_tiene_libertades:
+            tablero_salida[pos_original[0]][pos_original[1]] = 0
+
+            return tablero_salida
+        else:
+            return tablero_salida
+
+    def obtenerVecinos(self, y, x, forma_tablero):
+        vecinos = list()
+
+        if y > 0:
+            vecinos.append((y - 1, x))
+        if y < forma_tablero[0] - 1:
+            vecinos.append((y + 1, x))
+        if x > 0:
+                vecinos.append((y, x - 1))
+        if x < forma_tablero[1] - 1:
+            vecinos.append((y, x + 1))
+
+        return vecinos
