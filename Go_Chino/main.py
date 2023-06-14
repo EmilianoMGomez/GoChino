@@ -34,9 +34,9 @@ jugar_contra_pc_img=pygame.image.load("img/pc.png").convert()
 jugar_contra_jugador_img=pygame.image.load("img/jugador.png").convert()
 salir_img=pygame.image.load("img/salir.png").convert()
 
-atras_img=pygame.image.load("Img\Atras.jpg").convert()
-tablero_9x9_img=pygame.image.load("Img\Tablero_9x9.jpg").convert()
-tablero_19x19_img=pygame.image.load("Img\Tablero_19x19.jpg").convert()
+atras_img=pygame.image.load("img/Atras.jpg").convert()
+tablero_9x9_img=pygame.image.load("img/Tablero_9x9.jpg").convert()
+tablero_19x19_img=pygame.image.load("img/Tablero_19x19.jpg").convert()
 
 class Button():
     def __init__(self,x,y,image,scale):

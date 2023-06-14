@@ -33,7 +33,7 @@ class Principal:
 
         self.pantalla = pygame.display.set_mode((ANCHO_PANTALLA, ALTO_PANTALLA))
 
-        pygame.display.set_caption('Go Chess | ¡Es el turno de las negras!')
+        pygame.display.set_caption('Go Chino | ¡Es el turno de las negras!')
         pygame.display.set_allow_screensaver(True)
 
         if os.path.exists('./iconFile.png'):
@@ -107,7 +107,7 @@ class Principal:
                                 self.pasando_en_fila = 0
 
                                 persona = 'Negras' if not self.movimiento % 2 else 'Blancas'
-                                pygame.display.set_caption(f'Go Chess | ¡Es el turno de {persona}!')
+                                pygame.display.set_caption(f'Go Chino | ¡Es el turno de {persona}!')
 
                     
 
@@ -211,11 +211,11 @@ class Principal:
         self.movimiento_blanco = True if not self.movimiento_blanco else False
 
         persona = 'Negras' if not self.movimiento % 2 else 'Blancas'
-        pygame.display.set_caption(f'Go Chess | ¡Es el turno de {persona}!')
+        pygame.display.set_caption(f'Go Chino | ¡Es el turno de {persona}!')
 
     def FinPartida(self):
         persona_gano = self.calcularQuienGano()
-        mensaje_ganador = f'Go Chess | ¡{persona_gano} ha ganado!'
+        mensaje_ganador = f'Go Chino | ¡{persona_gano} ha ganado!'
 
         pygame.display.set_caption(mensaje_ganador)
 
@@ -476,6 +476,6 @@ class Principal:
         return vecinos
 
 # if __name__ == '__main__':
-#     komi = askfloat(title='Go Chess', prompt='Ingrese un valor de komi:', minvalue=0, maxvalue=100, initialvalue=2.5)
+#     komi = askfloat(title='Go Chino', prompt='Ingrese un valor de komi:', minvalue=0, maxvalue=100, initialvalue=2.5)
 #     app = Principal(komi=komi)
 #     app.ejecutar()
