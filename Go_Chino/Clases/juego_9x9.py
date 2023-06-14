@@ -6,7 +6,7 @@ import pygame
 from pygame.locals import K_ESCAPE, KEYDOWN, MOUSEBUTTONUP, QUIT, K_p
 
 BLANCO = (255, 255, 255)
-COLORTABLERO = (206, 148, 90)
+COLORTABLERO = (55, 107, 141)
 NEGRO = (0, 0, 0)
 MOSTRAR_HITBOXES = False
 
@@ -129,8 +129,8 @@ class Principal:
         pygame.quit()
 
     def dibujarTablero(self):
-        for y_pos in range(55, 550, 55):
-            pygame.draw.line(self.pantalla, NEGRO, (55, y_pos), (550, y_pos), width=2)
+        for y_pos in range(55, 500, 55):
+            pygame.draw.line(self.pantalla, NEGRO, (55, y_pos), (500, y_pos), width=2)
         
         for x_pos in range(55, 500, 55):
             pygame.draw.line(self.pantalla, NEGRO, (x_pos, 55), (x_pos, 500), width=2)
@@ -311,8 +311,8 @@ class Principal:
         """ Suponer que el grupo actual está capturado. Encontrarlo mediante un recorrido de inundación
         y si se encuentra una casilla vacía vecina, romper (el grupo está vivo).
 
-        tablero: matriz de 19x19 de piedras del jugador
-        tablero_oponente: matriz de 19x19 de piedras del oponente
+        tablero: matriz de 9x9 de piedras del jugador
+        tablero_oponente: matriz de 9x9 de piedras del oponente
         x, y: posición a probar
         grupo_actual: piedras probadas en el color del jugador
 
@@ -372,10 +372,10 @@ class Principal:
 
     def capturarPiezasRapido(self, tablero_negro_, tablero_blanco_, turno_blanco, y, x):
         """Eliminar todas las piezas del tablero que no tienen libertades.
-        tablero_negro es una matriz np.array de tamaño 19x19 con valor 1.0 si hay una piedra negra presente
+        tablero_negro es una matriz np.array de tamaño 9x9 con valor 1.0 si hay una piedra negra presente
         y 0.0 en caso contrario.
 
-        tablero_blanco es una matriz np.array de tamaño 19x19 similar a tablero_negro.
+        tablero_blanco es una matriz np.array de tamaño 9x9 similar a tablero_negro.
 
         turno_blanco: el jugador que hizo un movimiento
         (x, y): posición del movimiento

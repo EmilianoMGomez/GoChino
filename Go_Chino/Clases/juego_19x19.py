@@ -6,7 +6,7 @@ import pygame
 from pygame.locals import K_ESCAPE, KEYDOWN, MOUSEBUTTONUP, QUIT, K_p
 
 BLANCO = (255, 255, 255)
-COLORTABLERO = (206, 148, 90)
+COLORTABLERO = (55, 141, 89)
 NEGRO = (0, 0, 0)
 MOSTRAR_HITBOXES = False
 
