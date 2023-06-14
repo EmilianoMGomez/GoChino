@@ -308,15 +308,7 @@ class Principal:
         return colores
 
     def probarGrupo(self, tablero, tablero_oponente, y, x, grupo_actual):
-        """ Suponer que el grupo actual está capturado. Encontrarlo mediante un recorrido de inundación
-        y si se encuentra una casilla vacía vecina, romper (el grupo está vivo).
-
-        tablero: matriz de 9x9 de piedras del jugador
-        tablero_oponente: matriz de 9x9 de piedras del oponente
-        x, y: posición a probar
-        grupo_actual: piedras probadas en el color del jugador
-
-        """
+        
 
         pos = (y, x)
 
@@ -336,11 +328,7 @@ class Principal:
         return not tablero[pos]
 
     def rellenarInundacion(self, libertades, y, x):
-        """
-        Rellena de forma recursiva una región que se sabe que tiene libertades.
-        1.0 indica una libertad, 0.0 indica sin decidir y -1.0 indica una no libertad conocida (piedra negra).
-        `libertades` es una matriz np.array de libertades y no libertades conocidas actualmente.
-        """
+        
 
         if not libertades[y][x]:
             libertades[y][x] = 1.0 
@@ -371,15 +359,7 @@ class Principal:
                 self.arreglo_sprites[indice1][indice2].color = color
 
     def capturarPiezasRapido(self, tablero_negro_, tablero_blanco_, turno_blanco, y, x):
-        """Eliminar todas las piezas del tablero que no tienen libertades.
-        tablero_negro es una matriz np.array de tamaño 9x9 con valor 1.0 si hay una piedra negra presente
-        y 0.0 en caso contrario.
-
-        tablero_blanco es una matriz np.array de tamaño 9x9 similar a tablero_negro.
-
-        turno_blanco: el jugador que hizo un movimiento
-        (x, y): posición del movimiento
-        """
+        
 
         tablero_negro, tablero_blanco = tablero_negro_.copy(), tablero_blanco_.copy()
 

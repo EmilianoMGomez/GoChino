@@ -75,20 +75,19 @@ class Principal:
 
                 if evento.type == MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    # self.imprimir(f'Posición clickeada: {pos}', 'info')
+                    
 
                     sprites_click = [sprite for sprite in self.sprites if self.colisionSprite(sprite.ubicacion, pos)]
 
                     if sprites_click and not self.fin_del_juego:
-                        # self.imprimir('Sprite detectado.', 'info')
+                        
                         sprite_click = sprites_click[0]
 
                         if not sprite_click.ocupado:
                             self.movimiento += 1
                             color = NEGRO if self.movimiento % 2 else BLANCO
 
-                            # self.imprimir(f'Ubicación del sprite click: {sprite_click.ubicacion}', 'info')
-
+                            
                             x, y = sprite_click.ubicacion
                             ubicacion = (x + 1, y)
 
