@@ -2,7 +2,8 @@
 import pygame
 import sys
 
-from Clases.juego_19x19 import Principal
+from Clases.prueba_19x19_Bot import Principal as Main
+from Clases.juego_19x19 import Principal 
 from Clases.juego_9x9 import Principal as tablero_9x9_principal
 
 
@@ -34,9 +35,9 @@ jugar_contra_pc_img=pygame.image.load("img/pc.png").convert()
 jugar_contra_jugador_img=pygame.image.load("img/jugador.png").convert()
 salir_img=pygame.image.load("img/salir.png").convert()
 
-atras_img=pygame.image.load("img/Atras.jpg").convert()
-tablero_9x9_img=pygame.image.load("img/Tablero_9x9.jpg").convert()
-tablero_19x19_img=pygame.image.load("img/Tablero_19x19.jpg").convert()
+atras_img=pygame.image.load("Img\Atras.jpg").convert()
+tablero_9x9_img=pygame.image.load("Img\Tablero_9x9.jpg").convert()
+tablero_19x19_img=pygame.image.load("Img\Tablero_19x19.jpg").convert()
 
 class Button():
     def __init__(self,x,y,image,scale):
@@ -67,6 +68,7 @@ class Button():
         #Boton de Inicio
 
 jugador_button=Button(250,100,jugar_contra_jugador_img,1)
+Bot_button=Button(250,200,jugar_contra_pc_img,1)
 salir_button=Button(50,500,salir_img,1)
 
         #Boton jugar contra jugador
@@ -80,6 +82,7 @@ atras_button=Button(200,400,atras_img,1)
 #variables juego
 en_juego=True
 en_inicio=True
+en_Jugar_contra_bot=False
 tablero_19x19=False
 tablero_9x9=False
 en_partida_contra_jugador=False
@@ -98,6 +101,10 @@ while en_juego:
                 sys.exit()
         screen.blit(inicio,(0,0))
         
+        if Bot_button.draw():
+            en_inicio=False
+            en_Jugar_contra_bot=True
+            
         
         if jugador_button.draw():
             en_partida_contra_jugador=True
@@ -108,6 +115,20 @@ while en_juego:
         pygame.display.flip()
         clock.tick(30)
         
+    while en_Jugar_contra_bot:
+        en_Jugar_contra_bot=False
+        en_juego=False
+        en_inicio=False
+        
+        sc=Main()
+        sc.init()
+        sc.iniciarVSbot()
+       
+        
+        # pygame.display.flip()
+        # clock.tick(30)
+        
+            
     
     while en_partida_contra_jugador:
         
@@ -157,8 +178,8 @@ while en_juego:
             sc=Principal()
             sc.ejecutar()
         
-        pygame.display.flip()
-        clock.tick(30)
+            pygame.display.flip()
+            clock.tick(30)
         
         
         while tablero_9x9:
@@ -179,4 +200,4 @@ while en_juego:
         
         
     pygame.display.flip()
-        #clock.tick(30)    
+    clock.tick(30)    

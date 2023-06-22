@@ -6,7 +6,7 @@ import pygame
 from pygame.locals import K_ESCAPE, KEYDOWN, MOUSEBUTTONUP, QUIT, K_p
 
 BLANCO = (255, 255, 255)
-COLORTABLERO = (55, 141, 89)
+COLORTABLERO = (55 , 141, 89)
 NEGRO = (0, 0, 0)
 MOSTRAR_HITBOXES = False
 
@@ -33,7 +33,7 @@ class Principal:
 
         self.pantalla = pygame.display.set_mode((ANCHO_PANTALLA, ALTO_PANTALLA))
 
-        pygame.display.set_caption('Go Chino | ¡Es el turno de las negras!')
+        pygame.display.set_caption('Go Chess | ¡Es el turno de las negras!')
         pygame.display.set_allow_screensaver(True)
 
         if os.path.exists('./iconFile.png'):
@@ -75,19 +75,20 @@ class Principal:
 
                 if evento.type == MOUSEBUTTONUP:
                     pos = pygame.mouse.get_pos()
-                    
+                    self.imprimir(f'Posición clickeada: {pos}', 'info')
 
                     sprites_click = [sprite for sprite in self.sprites if self.colisionSprite(sprite.ubicacion, pos)]
 
                     if sprites_click and not self.fin_del_juego:
-                        
+                        self.imprimir('Sprite detectado.', 'info')
                         sprite_click = sprites_click[0]
 
                         if not sprite_click.ocupado:
                             self.movimiento += 1
                             color = NEGRO if self.movimiento % 2 else BLANCO
 
-                            
+                            self.imprimir(f'Ubicación del sprite click: {sprite_click.ubicacion}', 'info')
+
                             x, y = sprite_click.ubicacion
                             ubicacion = (x + 1, y)
 
@@ -106,7 +107,7 @@ class Principal:
                                 self.pasando_en_fila = 0
 
                                 persona = 'Negras' if not self.movimiento % 2 else 'Blancas'
-                                pygame.display.set_caption(f'Go Chino | ¡Es el turno de {persona}!')
+                                pygame.display.set_caption(f'Go Chess | ¡Es el turno de {persona}!')
 
                     
 
@@ -210,11 +211,11 @@ class Principal:
         self.movimiento_blanco = True if not self.movimiento_blanco else False
 
         persona = 'Negras' if not self.movimiento % 2 else 'Blancas'
-        pygame.display.set_caption(f'Go Chino | ¡Es el turno de {persona}!')
+        pygame.display.set_caption(f'Go Chess | ¡Es el turno de {persona}!')
 
     def FinPartida(self):
         persona_gano = self.calcularQuienGano()
-        mensaje_ganador = f'Go Chino | ¡{persona_gano} ha ganado!'
+        mensaje_ganador = f'Go Chess | ¡{persona_gano} ha ganado!'
 
         pygame.display.set_caption(mensaje_ganador)
 
@@ -244,6 +245,8 @@ class Principal:
             return 'Blancas'
         else:
             return 'Negras'
+        
+        
     
     def encontrarPiezasEnTablero(self):
         cantidad_blancas = 0
@@ -475,6 +478,6 @@ class Principal:
         return vecinos
 
 # if __name__ == '__main__':
-#     komi = askfloat(title='Go Chino', prompt='Ingrese un valor de komi:', minvalue=0, maxvalue=100, initialvalue=2.5)
+#     komi = askfloat(title='Go Chess', prompt='Ingrese un valor de komi:', minvalue=0, maxvalue=100, initialvalue=2.5)
 #     app = Principal(komi=komi)
 #     app.ejecutar()
